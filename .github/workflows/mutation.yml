@@ -23,7 +23,7 @@ jobs:
       - run: dotnet restore SistemaDeControleComtac.sln
       - run: dotnet stryker --config-file stryker-config.json
         working-directory: Tests
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: stryker-report
