@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Vulnerabilidade privada
+    url: https://github.com/DouglasHenrique0/SistermaDeControleComtac/security/advisories/new
+    about: Não publique credenciais ou detalhes exploráveis em uma Issue comum.

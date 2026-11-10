@@ -1,0 +1,19 @@
+{
+  "stryker-config": {
+    "project": "SistemaDeControleComtac.csproj",
+    "solution": "../SistemaDeControleComtac.sln",
+    "configuration": "Release",
+    "reporters": ["html", "progress"],
+    "thresholds": {
+      "high": 80,
+      "low": 60,
+      "break": 50
+    },
+    "mutate": [
+      "Models/**/*.cs",
+      "Services/**/*.cs",
+      "!SqlServerMigrations/**/*.cs",
+      "!Migrations/**/*.cs"
+    ]
+  }
+}

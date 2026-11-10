@@ -1,0 +1,76 @@
+﻿@page "/Veiculos/RelatorioDoDia"
+@model SistemaDeControleComtac.Pages.Veiculos.RelatorioDoDiaModel
+@{
+    ViewData["Title"] = "Relatório do dia";
+}
+
+<div class="report-page">
+    <section class="report-heading">
+        <div>
+            <p class="form-kicker">Acompanhamento operacional</p>
+            <h1>Relatório do dia</h1>
+            <p>Visão geral dos veículos registrados em @Model.DataDoRelatorio.ToString("dd 'de' MMMM", new System.Globalization.CultureInfo("pt-BR")).</p>
+        </div>
+        <a class="report-new-entry" asp-page="/Veiculos/RegistrarEntrada">Novo registro</a>
+    </section>
+
+    <section class="report-metrics" aria-label="Resumo do dia">
+        <article><span>Total registrado</span><strong>@Model.RegistrosDeHoje.Count</strong><small>veículos hoje</small></article>
+        <article class="patio"><span>No pátio</span><strong>@Model.VeiculosNoPatio</strong><small>aguardando liberação</small></article>
+        <article class="released"><span>Liberados</span><strong>@Model.VeiculosLiberados</strong><small>@Model.PercentualLiberado% do total</small></article>
+    </section>
+
+    <section class="report-table-shell">
+        <div class="report-table-heading">
+            <div><h2>Movimentações de hoje</h2><span>@Model.RegistrosDeHoje.Count registro(s)</span></div>
+            <span class="report-live"><i></i> Atualizado ao abrir</span>
+        </div>
+<div class="table-responsive">
+<table class="table report-table">
+    <thead>
+        <tr>
+            <th>Nº do Dia</th>
+            <th>Placa</th>
+            <th>Empresa</th>
+            <th>OS Comtac</th>
+            <th>Cliente</th>
+            <th>Hora de Entrada</th>
+            <th>Hora de Saída</th>
+            <th>Status</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var registro in Model.RegistrosDeHoje)
+        {
+                <tr class="report-row">
+                    <td>@registro.NumeroDoDia</td>
+                    <td><a asp-page="/Veiculos/Detalhes" asp-route-id="@registro.Id"><strong>@registro.Placa</strong></a></td>
+                    <td>@registro.Empresa</td>
+                    <td>@registro.OSComtac</td>
+                    <td>@registro.Cliente</td>
+                    <td>@registro.DataHoraEntrada.ToString("HH:mm")</td>
+                    <td>@(registro.DataHoraSaida.HasValue ? registro.DataHoraSaida.Value.ToString("HH:mm") : "")</td>
+                    <td>
+                        <span class="status-badge @(SistemaDeControleComtac.Models.RegistroStatus.EstaNoPatio(registro.Status) ? "pending" : "released")">
+                            @registro.Status
+                        </span>
+                    </td>
+                    <td>
+                        @if (SistemaDeControleComtac.Models.RegistroStatus.EstaNoPatio(registro.Status))
+                        {
+                            <a class="btn btn-primary report-action" asp-page="/Veiculos/RegistrarSaida" asp-route-id="@registro.Id">Registrar Saída</a>
+                        }
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+</div>
+</section>
+
+@if (!Model.RegistrosDeHoje.Any())
+{
+    <div class="report-empty"><strong>Nenhuma movimentação ainda</strong><span>O primeiro registro do dia aparecerá aqui.</span></div>
+}
+</div>

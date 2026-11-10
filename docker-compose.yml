@@ -1,0 +1,72 @@
+services:
+
+ sistema-comtac-app:
+    image: douglashenrique0/sistema-comtac:1.0
+    container_name: sistema-comtac
+    restart: unless-stopped
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+
+      # A senha vem do arquivo .env (fora do Git). Veja .env.example.
+      ConnectionStrings__DefaultConnection: "Server=sql-comtac,1433;Database=SistemaDeControleComtac;User Id=sa;Password=${SA_PASSWORD:?Defina SA_PASSWORD no arquivo .env};TrustServerCertificate=True"
+
+    depends_on:
+     - sql-comtac
+        
+
+    networks:
+      - app-network
+      - comtac-network
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=app-network"
+
+      # Domínio principal
+      - "traefik.http.routers.sistema-comtac.rule=Host(`sistemacomtac.com.br`)"
+
+      - "traefik.http.routers.sistema-comtac.entrypoints=websecure"
+
+      - "traefik.http.routers.sistema-comtac.tls.certresolver=myresolver"
+
+      # Porta interna da aplicação
+      - "traefik.http.services.sistema-comtac.loadbalancer.server.port=8080"
+
+
+
+
+ sql-comtac :
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: sql-comtac
+
+    restart: unless-stopped
+
+    environment:
+    - ACCEPT_EULA=Y
+    - SA_PASSWORD=${SA_PASSWORD:?Defina SA_PASSWORD no arquivo .env}
+
+    volumes:
+      - sql_data_comtac:/var/opt/mssql
+      - ./backup:/backup
+
+    networks:
+      - comtac-network
+
+
+volumes:
+
+  sql_data_comtac:
+  
+
+
+networks:
+
+  # Rede já existente onde está o Traefik
+  app-network:
+    external: true
+
+  # Rede privada deste projeto
+  comtac-network:
+    driver: bridge

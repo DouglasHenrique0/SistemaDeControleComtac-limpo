@@ -1,0 +1,30 @@
+@page
+@model Pages.Conta.LoginModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<div class="simple-login-page">
+    <section class="simple-login-card" aria-labelledby="login-title">
+        <header>
+            <h1 id="login-title">Entrar</h1>
+            <p>Digite seu e-mail e sua senha.</p>
+        </header>
+
+        <form method="post" asp-page="Login">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">E-mail</label>
+                <input asp-for="Email" class="form-control" autocomplete="username" autofocus />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Senha" class="form-label"></label>
+                <input asp-for="Senha" type="password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Senha" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
+    </section>
+</div>

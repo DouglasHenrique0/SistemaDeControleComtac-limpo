@@ -1,0 +1,58 @@
+@using SistemaDeControleComtac.Services
+@{
+    var sucesso = TempData[NotificacaoChaves.Sucesso] as string;
+    var erroTemporario = TempData[NotificacaoChaves.Erro] as string;
+    var errosDoModelo = ViewData.ModelState.Values
+        .SelectMany(estado => estado.Errors)
+        .Select(erro => string.IsNullOrWhiteSpace(erro.ErrorMessage)
+            ? "Não foi possível concluir. Revise os campos destacados."
+            : erro.ErrorMessage)
+        .Where(mensagem => !string.IsNullOrWhiteSpace(mensagem))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToList();
+}
+
+@if (!string.IsNullOrWhiteSpace(sucesso) || !string.IsNullOrWhiteSpace(erroTemporario) || errosDoModelo.Count > 0)
+{
+    <section class="notification-stack" aria-label="Avisos do sistema">
+        @if (!string.IsNullOrWhiteSpace(sucesso))
+        {
+            <div class="app-notification app-notification-success" role="status" data-app-notification data-auto-dismiss="7000">
+                <span class="app-notification-icon" aria-hidden="true">✓</span>
+                <div class="app-notification-copy">
+                    <strong>Concluído</strong>
+                    <p>@sucesso</p>
+                </div>
+                <button type="button" class="app-notification-close" data-notification-close aria-label="Fechar aviso">×</button>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(erroTemporario) || errosDoModelo.Count > 0)
+        {
+            <div class="app-notification app-notification-error" role="alert" tabindex="-1" data-app-notification data-focus-notification>
+                <span class="app-notification-icon" aria-hidden="true">!</span>
+                <div class="app-notification-copy">
+                    <strong>Não foi possível concluir</strong>
+                    @if (!string.IsNullOrWhiteSpace(erroTemporario))
+                    {
+                        <p>@erroTemporario</p>
+                    }
+                    @if (errosDoModelo.Count == 1)
+                    {
+                        <p>@errosDoModelo[0]</p>
+                    }
+                    else if (errosDoModelo.Count > 1)
+                    {
+                        <ul>
+                            @foreach (var mensagem in errosDoModelo)
+                            {
+                                <li>@mensagem</li>
+                            }
+                        </ul>
+                    }
+                </div>
+                <button type="button" class="app-notification-close" data-notification-close aria-label="Fechar aviso">×</button>
+            </div>
+        }
+    </section>
+}

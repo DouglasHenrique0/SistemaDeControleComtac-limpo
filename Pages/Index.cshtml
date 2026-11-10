@@ -1,0 +1,41 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Início";
+}
+
+<div class="simple-home">
+    <header class="simple-home-heading">
+        <h1>Início</h1>
+        <p>Escolha o que você deseja fazer.</p>
+    </header>
+
+    <nav class="simple-home-actions" aria-label="Opções principais">
+        <a class="simple-action primary" asp-page="/Veiculos/RegistrarEntrada" data-home-card>
+            <span class="simple-action-copy">
+                <strong>Registrar entrada</strong>
+                <span>Cadastrar um veículo que chegou.</span>
+            </span>
+            <span class="simple-action-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+
+        <a class="simple-action" asp-page="/Veiculos/RelatorioDoDia" data-home-card>
+            <span class="simple-action-copy">
+                <strong>Veículos de hoje</strong>
+                <span>Ver os veículos no pátio e os que já foram liberados.</span>
+            </span>
+            <span class="simple-action-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a class="simple-action" asp-page="/Relatorios/Historico" data-home-card>
+                <span class="simple-action-copy">
+                    <strong>Histórico de veículos</strong>
+                    <span>Consultar os veículos separados por mês.</span>
+                </span>
+                <span class="simple-action-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+        }
+    </nav>
+</div>

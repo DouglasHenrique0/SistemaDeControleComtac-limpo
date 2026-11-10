@@ -1,0 +1,41 @@
+name: Tarefa de engenharia
+description: Correção, melhoria, segurança, observabilidade ou nova função
+title: "[tipo]: "
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipo
+      options:
+        - Correção
+        - Melhoria
+        - Nova função
+        - Segurança
+        - Observabilidade
+        - Infraestrutura/DevOps
+        - Testes/qualidade
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Explique o resultado esperado e por que ele é necessário.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risco, observabilidade e rollback
+      description: Como validar, monitorar e desfazer a mudança com segurança?
+    validations:
+      required: true

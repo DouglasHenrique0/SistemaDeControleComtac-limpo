@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: read
+
+jobs:
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dotnet:
+    name: .NET quality and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: "**/*.csproj"
+      - run: dotnet restore SistemaDeControleComtac.sln
+      - run: dotnet format SistemaDeControleComtac.sln --verify-no-changes --no-restore
+      - run: dotnet build SistemaDeControleComtac.sln --configuration Release --no-restore
+      - run: >-
+          dotnet test SistemaDeControleComtac.sln
+          --configuration Release
+          --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults
+      - uses: codecov/codecov-action@v5
+        continue-on-error: true
+        with:
+          use_oidc: true
+          files: TestResults/**/coverage.cobertura.xml
+          fail_ci_if_error: false
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-test-results
+          path: TestResults
+
+  node:
+    name: Frontend tooling quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm quality
+      - name: Validate PR title
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      E2E_ADMIN_EMAIL: e2e-admin@example.invalid
+      E2E_ADMIN_PASSWORD: E2eOnly-${{ github.run_id }}-${{ github.run_attempt }}-Aa!123
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: dotnet restore SistemaDeControleComtac.sln
+      - run: dotnet build SistemaDeControleComtac.sln --configuration Release --no-restore
+      - run: mkdir -p .artifacts
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: |
+            playwright-report
+            test-results

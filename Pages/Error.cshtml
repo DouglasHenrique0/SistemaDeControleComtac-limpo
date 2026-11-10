@@ -1,0 +1,16 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Erro inesperado";
+}
+
+<div class="access-denied-page" role="alert">
+    <p class="form-kicker">O sistema encontrou um problema</p>
+    <h1>Não foi possível abrir esta página</h1>
+    <p>Tente novamente. Se o problema continuar, informe o código abaixo ao responsável pelo sistema.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p><strong>Código do erro:</strong> <code>@Model.RequestId</code></p>
+    }
+    <a class="btn btn-primary" asp-page="/Index">Voltar ao início</a>
+</div>

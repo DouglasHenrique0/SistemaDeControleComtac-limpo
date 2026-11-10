@@ -1,0 +1,22 @@
+version: 1
+project:
+  name: sistema-de-controle-comtac-e2e
+
+layers:
+  - name: e2e
+    match:
+      - e2e/**/*.ts
+  - name: tooling
+    match:
+      - playwright.config.ts
+
+ruleset:
+  e2e:
+    mayDependOn: []
+  tooling:
+    mayDependOn: []
+
+agent:
+  instructions:
+    - ArchContract cobre somente TypeScript; execute também os testes NetArchTest para o núcleo C#.
+    - Testes E2E não importam código interno da aplicação nem contornam autenticação de produção.

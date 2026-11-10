@@ -1,0 +1,17 @@
+@page
+@model NaoEncontradoModel
+@{
+    ViewData["Title"] = "Página não encontrada";
+}
+
+<section class="not-found-page" aria-labelledby="not-found-title">
+    <div class="not-found-code" aria-hidden="true">404</div>
+    <div class="not-found-copy">
+        <p class="form-kicker">Fim desta rota</p>
+        <h1 id="not-found-title">Esta página não foi encontrada</h1>
+        <p>
+            O endereço pode ter mudado ou não existe. Use o botão abaixo para voltar a uma rota segura do sistema.
+        </p>
+        <a class="btn btn-primary" asp-page="/Index">Voltar ao início</a>
+    </div>
+</section>

@@ -1,0 +1,113 @@
+﻿@using SistemaDeControleComtac.Models
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sistema de Controle Comtac</title>
+    <link rel="icon" href="~/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="~/favicon-32x32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="~/apple-touch-icon.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+@{
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? string.Empty;
+    var pageSection = currentPage.StartsWith("/Conta", StringComparison.OrdinalIgnoreCase)
+        ? "page-account"
+        : currentPage.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase)
+            ? "page-admin"
+            : currentPage.StartsWith("/Financeiro", StringComparison.OrdinalIgnoreCase)
+                ? "page-finance"
+                : currentPage.StartsWith("/Relatorios", StringComparison.OrdinalIgnoreCase)
+                    ? "page-history"
+                    : currentPage.StartsWith("/Veiculos", StringComparison.OrdinalIgnoreCase)
+                        ? "page-vehicles"
+                        : "page-home";
+
+    string ActiveWhen(string page) => currentPage.Equals(page, StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+}
+<body class="theme-comtac @pageSection">
+    <partial name="_Notificacoes" />
+    <header>
+        <nav class="navbar navbar-expand-xl navbar-modern mb-3">
+            <div class="container nav-shell">
+                <a class="navbar-brand nav-brand" asp-area="" asp-page="/Index">
+                    Sistema de Controle Comtac
+                </a>
+                <button class="navbar-toggler nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation" aria-controls="mainNavigation"
+                        aria-expanded="false" aria-label="Abrir ou fechar menu">
+                    <span class="nav-toggle-label">Menu</span>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="mainNavigation" class="navbar-collapse collapse d-xl-inline-flex justify-content-between">
+                    <ul class="navbar-nav nav-list flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link @ActiveWhen("/Index")" asp-area="" asp-page="/Index">Início</a>
+                        </li>
+
+                    @* Condicional do Menu *@
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @ActiveWhen("/Veiculos/RegistrarEntrada")" asp-page="/Veiculos/RegistrarEntrada">Entrada</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @ActiveWhen("/Veiculos/RelatorioDoDia")" asp-page="/Veiculos/RelatorioDoDia">Veículos de hoje</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @ActiveWhen("/Relatorios/Historico")" asp-page="/Relatorios/Historico">Histórico</a>
+                        </li>
+                        @* Painel Admin visível somente para usuários na role Admin *@
+                        @if (User.IsInRole(ApplicationRoles.Admin))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @ActiveWhen("/Admin/Index")" asp-page="/Admin/Index">Administração</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @ActiveWhen("/Financeiro/Receita")" asp-page="/Financeiro/Receita">Financeiro</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @ActiveWhen("/Conta/Cadastrar")" asp-page="/Conta/Cadastrar">Usuários</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link @ActiveWhen("/Conta/AlterarSenha")" asp-page="/Conta/AlterarSenha">Alterar senha</a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" asp-page="/Conta/Logout" class="d-inline">
+                                <button type="submit" class="nav-link nav-button-logout">Sair</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @ActiveWhen("/Conta/Login")" asp-page="/Conta/Login">Entrar</a>
+                        </li>
+                    }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 · Sistema de Controle Comtac · Produzido por: Douglas · <a asp-area="" asp-page="/Privacy">Privacidade</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,86 @@
+@page
+@model SistemaDeControleComtac.Pages.Veiculos.RegistrarEntradaModel
+@{
+    ViewData["Title"] = "Registrar entrada";
+}
+
+<div class="vehicle-entry-page">
+    <aside class="entry-side-panel">
+        <p class="form-kicker">Controle de pátio</p>
+        <h1>Registrar entrada</h1>
+        <p class="entry-side-copy">Cadastre os dados do veículo para iniciar o acompanhamento da operação.</p>
+
+        <div class="entry-status-line">
+            <span class="status-dot"></span>
+            <span>Operação pronta para começar</span>
+        </div>
+
+        <ol class="entry-steps">
+            <li class="active"><strong>01</strong><span>Identifique o veículo</span></li>
+            <li><strong>02</strong><span>Informe a ordem de serviço</span></li>
+            <li><strong>03</strong><span>Confirme o cadastro</span></li>
+        </ol>
+    </aside>
+
+    <section class="entry-form-panel">
+        <div class="entry-form-heading">
+            <p class="form-kicker">Novo registro</p>
+            <h2>Dados do veículo</h2>
+            <p>Preencha os campos abaixo para liberar o acompanhamento.</p>
+        </div>
+
+        <form method="post" class="entry-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.Placa" class="form-label"></label>
+                <input asp-for="Input.Placa" class="form-control" maxlength="7" autocomplete="off" />
+                <span asp-validation-for="Input.Placa" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.Frota" class="form-label"></label>
+                <input asp-for="Input.Frota" class="form-control" maxlength="50" autocomplete="off" />
+                <span asp-validation-for="Input.Frota" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.Empresa" class="form-label"></label>
+                <input asp-for="Input.Empresa" class="form-control" maxlength="150" autocomplete="organization" />
+                <span asp-validation-for="Input.Empresa" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.OSComtac" class="form-label"></label>
+                <input asp-for="Input.OSComtac" class="form-control" maxlength="80" autocomplete="off" />
+                <span asp-validation-for="Input.OSComtac" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.Cliente" class="form-label"></label>
+                <input asp-for="Input.Cliente" class="form-control" maxlength="150" autocomplete="name" />
+                <span asp-validation-for="Input.Cliente" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.ModeloTCO" class="form-label"></label>
+                <input asp-for="Input.ModeloTCO" class="form-control" maxlength="100" autocomplete="off" />
+                <span asp-validation-for="Input.ModeloTCO" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 entry-field">
+                <label asp-for="Input.NumeroSerie" class="form-label"></label>
+                <input asp-for="Input.NumeroSerie" class="form-control" maxlength="8" autocomplete="off" />
+                <span asp-validation-for="Input.NumeroSerie" class="text-danger"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Registrar Entrada</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

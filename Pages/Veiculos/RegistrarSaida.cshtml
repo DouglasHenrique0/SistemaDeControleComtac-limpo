@@ -1,0 +1,114 @@
+@page "/Veiculos/RegistrarSaida/{id:int?}"
+@using System.Globalization
+@using SistemaDeControleComtac.Models
+@using SistemaDeControleComtac.Services
+@model SistemaDeControleComtac.Pages.Veiculos.RegistrarSaida.RegistrarSaidaModel
+@{
+    ViewData["Title"] = "Registrar saída";
+}
+
+<div class="vehicle-form-page saida-page">
+    <div class="form-heading">
+        <p class="form-kicker">Liberação do pátio</p>
+        <h1>Registrar saída</h1>
+        <p class="form-intro">Confira os serviços e confirme a liberação do veículo.</p>
+    </div>
+
+    <section class="exit-vehicle-summary" aria-label="Veículo selecionado">
+        <div><span>Placa</span><strong>@Model.RegistroVeiculo.Placa</strong></div>
+        <div><span>Empresa</span><strong>@Model.RegistroVeiculo.Empresa</strong></div>
+        <div><span>OS Comtac</span><strong>@Model.RegistroVeiculo.OSComtac</strong></div>
+        <div><span>Modelo TCO</span><strong>@Model.RegistroVeiculo.ModeloTCO</strong></div>
+        <div><span>Número de série</span><strong>@Model.RegistroVeiculo.NumeroSerie</strong></div>
+    </section>
+
+    <form method="post" class="exit-form">
+        <input type="hidden" asp-for="Input.RegistroId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+        <fieldset class="service-fieldset">
+            <legend>Serviços realizados</legend>
+            <p class="field-help">Marque somente o que foi feito neste veículo.</p>
+
+            <label class="service-check" for="fezConserto">
+                <input class="form-check-input" type="checkbox" asp-for="Input.FezConserto" id="fezConserto"
+                       aria-controls="consertoFields" aria-expanded="@Model.Input.FezConserto.ToString().ToLowerInvariant()" />
+                <span><strong>Conserto</strong><small>Informe a descrição e o valor cobrado.</small></span>
+            </label>
+
+            <div id="consertoFields" class="conditional-service-fields" data-conserto-fields hidden="@(!Model.Input.FezConserto)">
+                <div class="mb-3">
+                    <label asp-for="Input.DescricaoConserto" class="form-label">Observação do conserto</label>
+                    <textarea asp-for="Input.DescricaoConserto" class="form-control" rows="3" maxlength="200"></textarea>
+                    <span asp-validation-for="Input.DescricaoConserto" class="text-danger"></span>
+                </div>
+                <div class="mb-3 money-field">
+                    <label asp-for="Input.ValorConserto" class="form-label">Valor do conserto</label>
+                    <div class="money-input">
+                        <span aria-hidden="true">R$</span>
+                        <input asp-for="Input.ValorConserto" class="form-control" type="number" min="0.01" max="999999999.99" step="0.01" inputmode="decimal" placeholder="0,00" />
+                    </div>
+                    <span asp-validation-for="Input.ValorConserto" class="text-danger"></span>
+                </div>
+            </div>
+
+            <label class="service-check" for="fezSelagem">
+                <input class="form-check-input" type="checkbox" asp-for="Input.FezSelagem" id="fezSelagem"
+                       aria-controls="selagemFields" aria-expanded="@Model.Input.FezSelagem.ToString().ToLowerInvariant()" />
+                <span><strong>Selagem / ensaio</strong><small>Consulte e selecione a tarifa aplicada.</small></span>
+            </label>
+
+            <div id="selagemFields" class="conditional-service-fields tariff-fields" data-selagem-fields hidden="@(!Model.Input.FezSelagem)"
+                 data-escolar-com-gru="@TarifaService.EscolarComGru.ToString(CultureInfo.InvariantCulture)"
+                 data-escolar-sem-gru="@TarifaService.EscolarSemGru.ToString(CultureInfo.InvariantCulture)"
+                 data-pesado-com-gru="@TarifaService.PesadoComGru.ToString(CultureInfo.InvariantCulture)"
+                 data-pesado-sem-gru="@TarifaService.PesadoSemGru.ToString(CultureInfo.InvariantCulture)">
+                <div class="exit-tariff-list" aria-label="Valores das selagens">
+                    <div><span>Escolar com GRU</span><strong>@TarifaService.EscolarComGru.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+                    <div><span>Escolar sem GRU</span><strong>@TarifaService.EscolarSemGru.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+                    <div><span>Caminhão, van ou ônibus com GRU</span><strong>@TarifaService.PesadoComGru.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+                    <div><span>Caminhão, van ou ônibus sem GRU</span><strong>@TarifaService.PesadoSemGru.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.CategoriaTarifa" class="form-label">Tipo de veículo</label>
+                    <select asp-for="Input.CategoriaTarifa" asp-items="Html.GetEnumSelectList<CategoriaTarifa>()" class="form-select">
+                        <option value="">Selecione</option>
+                    </select>
+                    <span asp-validation-for="Input.CategoriaTarifa" class="text-danger"></span>
+                </div>
+
+                <fieldset class="gru-options">
+                    <legend>A tarifa inclui GRU?</legend>
+                    <label for="gruSim"><input asp-for="Input.IncluiGru" id="gruSim" type="radio" value="true" /> Sim, com GRU</label>
+                    <label for="gruNao"><input asp-for="Input.IncluiGru" id="gruNao" type="radio" value="false" /> Não, sem GRU</label>
+                    <span asp-validation-for="Input.IncluiGru" class="text-danger"></span>
+                </fieldset>
+
+                <output class="tariff-preview" data-tariff-preview aria-live="polite">Selecione as opções para ver o valor.</output>
+            </div>
+        </fieldset>
+
+        <div class="mb-3">
+            <label asp-for="Input.TecnicoResponsavel" class="form-label">Técnico responsável</label>
+            <input asp-for="Input.TecnicoResponsavel" class="form-control" maxlength="100" autocomplete="name" />
+            <span asp-validation-for="Input.TecnicoResponsavel" class="text-danger"></span>
+        </div>
+
+        <label class="confirmation-check" for="confirmarSaida">
+            <input asp-for="Input.ConfirmarSaida" class="form-check-input" id="confirmarSaida" />
+            <span>Confirmo que o veículo pode ser liberado.</span>
+        </label>
+        <span asp-validation-for="Input.ConfirmarSaida" class="text-danger"></span>
+
+        <div class="form-actions">
+            <a asp-page="/Veiculos/RelatorioDoDia" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Registrar saída</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/registrar-saida.js" asp-append-version="true"></script>
+}

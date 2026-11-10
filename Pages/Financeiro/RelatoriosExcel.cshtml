@@ -1,0 +1,89 @@
+@page
+@using System.Globalization
+@model SistemaDeControleComtac.Pages.Financeiro.RelatoriosExcelModel
+@{
+    ViewData["Title"] = "Relatórios em Excel";
+    var cultura = CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<div class="report-page excel-reports-page">
+    <section class="report-heading">
+        <div>
+            <p class="form-kicker">Área da administração</p>
+            <h1>Relatórios em Excel</h1>
+            <p>Gere um mês e encontre qualquer versão já guardada.</p>
+        </div>
+        <a class="btn btn-outline-secondary finance-export" asp-page="/Financeiro/Receita" asp-route-ano="@Model.Ano" asp-route-mes="@Model.Mes">Voltar ao financeiro</a>
+    </section>
+
+    <form method="post" asp-page-handler="Gerar" class="excel-generate-form" aria-label="Gerar relatório mensal em Excel">
+        <div>
+            <label asp-for="Mes" class="form-label">Mês</label>
+            <select asp-for="Mes" class="form-select">
+                @for (var mes = 1; mes <= 12; mes++)
+                {
+                    var nomeMes = cultura.TextInfo.ToTitleCase(new DateTime(2000, mes, 1).ToString("MMMM", cultura));
+                    <option value="@mes">@nomeMes</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label asp-for="Ano" class="form-label">Ano</label>
+            <select asp-for="Ano" class="form-select">
+                @foreach (var ano in Model.AnosDisponiveis)
+                {
+                    <option value="@ano">@ano</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Gerar relatório do mês</button>
+    </form>
+
+    <section class="excel-library" aria-labelledby="excel-library-title">
+        <div class="report-table-heading">
+            <div>
+                <h2 id="excel-library-title">Relatórios guardados</h2>
+                <span>As versões mais recentes aparecem primeiro.</span>
+            </div>
+        </div>
+
+        @if (Model.Grupos.Count == 0)
+        {
+            <div class="report-empty">
+                <strong>Nenhum relatório gerado ainda</strong>
+                <span>Escolha o mês e o ano acima para guardar a primeira versão.</span>
+            </div>
+        }
+        else
+        {
+            <div class="excel-year-list">
+                @foreach (var grupoAno in Model.Grupos)
+                {
+                    <section class="excel-year" aria-labelledby="excel-year-@grupoAno.Ano">
+                        <h3 id="excel-year-@grupoAno.Ano">@grupoAno.Ano</h3>
+                        <div class="excel-month-list">
+                            @foreach (var grupoMes in grupoAno.Meses)
+                            {
+                                <section class="excel-month" aria-labelledby="excel-month-@grupoAno.Ano-@grupoMes.Mes">
+                                    <h4 id="excel-month-@grupoAno.Ano-@grupoMes.Mes">@grupoMes.Nome</h4>
+                                    <div class="excel-file-list">
+                                        @foreach (var arquivo in grupoMes.Arquivos)
+                                        {
+                                            <article class="excel-file-card">
+                                                <div>
+                                                    <strong>@arquivo.NomeArquivo</strong>
+                                                    <span>Gerado em @arquivo.DataGeracao.ToString("dd/MM/yyyy 'às' HH:mm")</span>
+                                                </div>
+                                                <a class="btn btn-outline-secondary" asp-page-handler="Baixar" asp-route-id="@arquivo.Id">Baixar</a>
+                                            </article>
+                                        }
+                                    </div>
+                                </section>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+        }
+    </section>
+</div>

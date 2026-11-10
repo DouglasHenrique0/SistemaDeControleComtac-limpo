@@ -1,0 +1,30 @@
+name: Mutation testing
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  stryker:
+    runs-on: ubuntu-latest
+    env:
+      # Evita que o Stryker tente mutar o código gerado pelo compilador do Sentry.
+      SentryDisableSourceGenerator: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet tool restore
+      - run: dotnet restore SistemaDeControleComtac.sln
+      - run: dotnet stryker --config-file stryker-config.json
+        working-directory: Tests
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stryker-report
+          path: Tests/StrykerOutput

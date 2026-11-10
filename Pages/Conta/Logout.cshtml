@@ -1,0 +1,14 @@
+@page
+@model Pages.Conta.LogoutModel
+@{
+    ViewData["Title"] = "Sair";
+}
+
+<h1>Logout</h1>
+
+<p>Tem certeza que deseja sair?</p>
+
+<form method="post" asp-page="/Conta/Logout">
+    <button type="submit" class="btn btn-danger">Sair</button>
+    <a asp-page="/Index" class="btn btn-secondary">Cancelar</a>
+</form>

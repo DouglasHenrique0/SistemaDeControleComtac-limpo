@@ -1,0 +1,115 @@
+@page
+@using System.Globalization
+@using SistemaDeControleComtac.Models
+@using SistemaDeControleComtac.Services
+@model SistemaDeControleComtac.Pages.Financeiro.ReceitaModel
+@{
+    ViewData["Title"] = "Relatório financeiro";
+    var cultura = CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<div class="report-page finance-page">
+    <section class="report-heading finance-heading">
+        <div>
+            <p class="form-kicker">Área da administração</p>
+            <h1>Relatório financeiro</h1>
+            <p>Receitas registradas em @Model.CompetenciaDescricao.</p>
+        </div>
+        <a class="btn btn-primary finance-export"
+           asp-page="/Financeiro/RelatoriosExcel"
+           asp-route-ano="@Model.Ano"
+           asp-route-mes="@Model.Mes">Gerar ou baixar Excel</a>
+    </section>
+
+    <form method="get" class="finance-filter" aria-label="Escolher mês do relatório">
+        <div>
+            <label asp-for="Mes">Mês</label>
+            <select asp-for="Mes" class="form-select">
+                @for (var mes = 1; mes <= 12; mes++)
+                {
+                    var nomeMes = cultura.TextInfo.ToTitleCase(new DateTime(2000, mes, 1).ToString("MMMM", cultura));
+                    <option value="@mes">@nomeMes</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label asp-for="Ano">Ano</label>
+            <select asp-for="Ano" class="form-select">
+                @foreach (var ano in Model.AnosDisponiveis)
+                {
+                    <option value="@ano">@ano</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Ver relatório</button>
+    </form>
+
+    <section class="finance-summary" aria-label="Resumo financeiro do mês">
+        <div><span>Total do mês</span><strong>@Model.Relatorio.Total.ToString("C", cultura)</strong></div>
+        <div><span>Selagem / ensaio</span><strong>@Model.Relatorio.TotalSelagem.ToString("C", cultura)</strong></div>
+        <div><span>Consertos</span><strong>@Model.Relatorio.TotalConserto.ToString("C", cultura)</strong></div>
+    </section>
+
+    <section class="report-table-shell">
+        <div class="report-table-heading">
+            <div>
+                <h2>Lançamentos do mês</h2>
+                <span>@Model.Relatorio.Itens.Count lançamento(s)</span>
+            </div>
+        </div>
+
+        @if (Model.Relatorio.Itens.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table report-table finance-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Placa</th>
+                            <th>Empresa</th>
+                            <th>OS</th>
+                            <th>Serviço</th>
+                            <th>Detalhes</th>
+                            <th class="money-column">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Relatorio.Itens)
+                        {
+                            <tr>
+                                <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                                <td><strong>@item.Placa</strong></td>
+                                <td>@item.Empresa</td>
+                                <td>@item.OSComtac</td>
+                                <td>@item.TipoDescricao</td>
+                                <td>@item.Descricao</td>
+                                <td class="money-column">@item.Valor.ToString("C", cultura)</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6">Total</td>
+                            <td class="money-column">@Model.Relatorio.Total.ToString("C", cultura)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="report-empty">
+                <strong>Nenhuma receita neste mês</strong>
+                <span>Quando uma saída com selagem ou conserto for registrada, ela aparecerá aqui automaticamente.</span>
+            </div>
+        }
+    </section>
+
+    <details class="tariff-reference">
+        <summary>Valores usados no cálculo da selagem / ensaio</summary>
+        <div>
+            <p><strong>Escolar:</strong> @TarifaService.EscolarComGru.ToString("C", cultura) com GRU · @TarifaService.EscolarSemGru.ToString("C", cultura) sem GRU</p>
+            <p><strong>Caminhão, van ou ônibus:</strong> @TarifaService.PesadoComGru.ToString("C", cultura) com GRU · @TarifaService.PesadoSemGru.ToString("C", cultura) sem GRU</p>
+        </div>
+    </details>
+</div>

@@ -1,0 +1,40 @@
+@page
+@using SistemaDeControleComtac.Models
+@using SistemaDeControleComtac.Services
+@model SistemaDeControleComtac.Pages.Veiculos.DetalhesModel
+@{
+    ViewData["Title"] = "Detalhes do veículo";
+}
+
+<div class="report-page">
+    <section class="report-heading">
+        <div>
+            <p class="form-kicker">Registro do veículo</p>
+            <h1>Detalhes do veículo</h1>
+            <p>Confira as informações registradas para a placa @Model.Veiculo.Placa.</p>
+        </div>
+        <a class="btn btn-outline-secondary" asp-page="/Relatorios/Historico">Voltar ao histórico</a>
+    </section>
+
+    <section class="exit-vehicle-summary" aria-label="Dados do veículo">
+        <div><span>Placa</span><strong>@Model.Veiculo.Placa</strong></div>
+        <div><span>Frota</span><strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Frota) ? "—" : Model.Veiculo.Frota)</strong></div>
+        <div><span>Empresa</span><strong>@Model.Veiculo.Empresa</strong></div>
+        <div><span>Cliente</span><strong>@Model.Veiculo.Cliente</strong></div>
+        <div><span>OS Comtac</span><strong>@Model.Veiculo.OSComtac</strong></div>
+        <div><span>Modelo TCO</span><strong>@Model.Veiculo.ModeloTCO</strong></div>
+        <div><span>Número de série</span><strong>@Model.Veiculo.NumeroSerie</strong></div>
+        <div><span>Status</span><strong>@Model.Veiculo.Status</strong></div>
+        <div><span>Entrada</span><strong>@Model.Veiculo.DataHoraEntrada.ToString("dd/MM/yyyy HH:mm")</strong></div>
+        <div><span>Saída</span><strong>@(Model.Veiculo.DataHoraSaida?.ToString("dd/MM/yyyy HH:mm") ?? "—")</strong></div>
+        <div><span>Serviços</span><strong>@ServicoDescricaoService.Obter(Model.Veiculo)</strong></div>
+        <div><span>Técnico</span><strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.TecnicoResponsavel) ? "—" : Model.Veiculo.TecnicoResponsavel)</strong></div>
+    </section>
+
+    @if (RegistroStatus.EstaNoPatio(Model.Veiculo.Status))
+    {
+        <div class="form-actions">
+            <a class="btn btn-primary" asp-page="/Veiculos/RegistrarSaida" asp-route-id="@Model.Veiculo.Id">Registrar saída</a>
+        </div>
+    }
+</div>

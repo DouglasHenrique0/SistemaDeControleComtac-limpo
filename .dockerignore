@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+.git/
+.vs/
+.vscode/
+node_modules/
+TestResults/
+*.user
+*.suo
+*.db
+*.db-shm
+*.db-wal
+*.bak
+.env
+.env.*
+secrets.json
+App_Data/

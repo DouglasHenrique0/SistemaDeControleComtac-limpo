@@ -1,0 +1,40 @@
+@page
+@model SistemaDeControleComtac.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Área exclusiva da Dona";
+}
+
+<div class="report-page admin-page">
+<section class="report-heading admin-heading">
+    <div>
+        <p class="form-kicker">Área administrativa</p>
+        <h1>@ViewData["Title"]</h1>
+        <p>Acesse relatórios históricos e recursos administrativos protegidos.</p>
+    </div>
+</section>
+
+<div class="admin-actions">
+    <a class="admin-action-card" asp-page="/Relatorios/Historico">
+        <span>Histórico</span>
+        <strong>Relatórios de veículos</strong>
+        <small>Consulte movimentações antigas separadas por mês.</small>
+    </a>
+    <a class="admin-action-card" asp-page="/Financeiro/Receita">
+        <span>Financeiro</span>
+        <strong>Receitas</strong>
+        <small>Área financeira restrita à administração.</small>
+    </a>
+    <a class="admin-action-card" asp-page="/Financeiro/RelatoriosExcel">
+        <span>Excel</span>
+        <strong>Relatórios mensais</strong>
+        <small>Gere, encontre e baixe as versões guardadas.</small>
+    </a>
+</div>
+
+<section class="report-table-shell admin-profile-card">
+<div class="admin-profile-status">
+    <span>Perfil atual</span>
+    <strong>@(Model.IsAdmin ? "Administrador" : Model.IsColaborador ? "Colaborador" : "Sem perfil")</strong>
+</div>
+</section>
+</div>

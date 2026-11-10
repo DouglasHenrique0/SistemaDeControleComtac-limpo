@@ -1,0 +1,107 @@
+@page
+@model SistemaDeControleComtac.Pages.Relatorios.HistoricoModel
+@{
+    ViewData["Title"] = "Histórico de veículos";
+}
+
+<div class="report-page history-page">
+    <section class="report-heading history-heading">
+        <div>
+            <p class="form-kicker">Consulta de movimentações</p>
+            <h1>Histórico de veículos</h1>
+            <p>Os registros estão separados por mês para facilitar a consulta.</p>
+        </div>
+    </section>
+
+    <form method="get" class="report-filter" aria-label="Filtros do histórico">
+        <div>
+            <label asp-for="DataInicial">Data inicial</label>
+            <input asp-for="DataInicial" type="date" class="form-control" min="2000-01-01" max="2100-12-31" />
+            <span asp-validation-for="DataInicial" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="DataFinal">Data final</label>
+            <input asp-for="DataFinal" type="date" class="form-control" min="2000-01-01" max="2100-12-31" />
+            <span asp-validation-for="DataFinal" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Placa">Placa</label>
+            <input asp-for="Placa" class="form-control" maxlength="7" placeholder="ABC1D23" autocomplete="off" />
+            <span asp-validation-for="Placa" class="text-danger"></span>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            <a asp-page="/Relatorios/Historico" class="btn btn-outline-secondary">Limpar</a>
+        </div>
+    </form>
+
+    @if (Model.Meses.Count > 0)
+    {
+        <div class="history-summary" role="status">
+            <strong>@Model.TotalRegistros veículo(s)</strong>
+            <span>em @Model.Meses.Count mês(es)</span>
+        </div>
+
+        <div class="history-month-list">
+            @for (var indice = 0; indice < Model.Meses.Count; indice++)
+            {
+                var mes = Model.Meses[indice];
+                <details class="history-month" open="@(indice == 0)">
+                    <summary>
+                        <span>@mes.Titulo</span>
+                        <strong>@mes.Registros.Count veículo(s)</strong>
+                    </summary>
+
+                    <div class="table-responsive">
+                        <table class="table report-table history-table">
+                            <thead>
+                                <tr>
+                                    <th>Nº</th>
+                                    <th>Placa</th>
+                                    <th>Frota</th>
+                                    <th>Empresa</th>
+                                    <th>Cliente</th>
+                                    <th>OS</th>
+                                    <th>Entrada</th>
+                                    <th>Saída</th>
+                                    <th>Status</th>
+                                    <th>Serviços</th>
+                                    <th>Técnico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var registro in mes.Registros)
+                                {
+                                    <tr class="report-row">
+                                        <td>@registro.NumeroDoDia</td>
+                                        <td><a asp-page="/Veiculos/Detalhes" asp-route-id="@registro.Id"><strong>@registro.Placa</strong></a></td>
+                                        <td>@(string.IsNullOrWhiteSpace(registro.Frota) ? "—" : registro.Frota)</td>
+                                        <td>@registro.Empresa</td>
+                                        <td>@registro.Cliente</td>
+                                        <td>@registro.OSComtac</td>
+                                        <td>@registro.DataHoraEntrada.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@(registro.DataHoraSaida?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
+                                        <td>
+                                            <span class="status-badge @(SistemaDeControleComtac.Models.RegistroStatus.EstaNoPatio(registro.Status) ? "pending" : "released")">
+                                                @registro.Status
+                                            </span>
+                                        </td>
+                                        <td>@registro.Servicos</td>
+                                        <td>@(string.IsNullOrWhiteSpace(registro.TecnicoResponsavel) ? "—" : registro.TecnicoResponsavel)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            }
+        </div>
+    }
+    else if (Model.ModelState.IsValid)
+    {
+        <div class="report-empty">
+            <strong>Nenhum registro encontrado</strong>
+            <span>Ajuste o período ou limpe os filtros para consultar todo o histórico.</span>
+        </div>
+    }
+</div>

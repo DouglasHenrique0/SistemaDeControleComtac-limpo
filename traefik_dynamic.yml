@@ -1,0 +1,11 @@
+http:
+  middlewares:
+    https-only:
+      redirectScheme:
+        scheme: https
+
+    # Descomente para habilitar o basic auth
+    # dashboard-auth:
+    #   basicAuth:
+    #     users:
+    #       - 'admin:<hash bcrypt gerado com htpasswd -nbB admin SUA_SENHA; não versione o hash real>'
