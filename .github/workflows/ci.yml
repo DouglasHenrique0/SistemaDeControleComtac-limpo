@@ -47,7 +47,7 @@ jobs:
           use_oidc: true
           files: TestResults/**/coverage.cobertura.xml
           fail_ci_if_error: false
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: dotnet-test-results
@@ -98,7 +98,7 @@ jobs:
       - run: dotnet build SistemaDeControleComtac.sln --configuration Release --no-restore
       - run: mkdir -p .artifacts
       - run: pnpm e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-results
