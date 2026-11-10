@@ -41,7 +41,7 @@ jobs:
           --no-build
           --collect:"XPlat Code Coverage"
           --results-directory TestResults
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         continue-on-error: true
         with:
           use_oidc: true
